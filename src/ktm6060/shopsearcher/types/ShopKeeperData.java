@@ -131,7 +131,7 @@ public class ShopKeeperData {
 	public String toString() {
 		String str = "Items for sale: " + this.itemsForSale;
 		for (int i = 0; i < items.size(); i++) {
-			str += "\nItem: " + items.get(i).getItemString() + "  Amount: " + items.get(i).getAmount() + "  Price: " + items.get(i).getPrice();
+			str += "\nItem: " + items.get(i).toString() + "  Amount: " + items.get(i).getAmount() + "  Price: " + items.get(i).getPrice();
 		}
 		return str;
 	}

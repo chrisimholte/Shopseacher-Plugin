@@ -23,7 +23,7 @@ public class ShopItem {
 		this.shopItemID = shopItemID;
 		updateData();
 	}
-
+	
 	public String getItemString() {
 		return "" + item;
 	}
@@ -95,12 +95,12 @@ public class ShopItem {
 	}
 	
 	public int compareTo(ShopItem o) {
-		return item.toString().compareToIgnoreCase(o.getItemString());
+		return item.toString().compareToIgnoreCase(o.toString());
 	}
 	
 	@SuppressWarnings("deprecation")
 	public String toString() {
-		if (itemMeta instanceof SkullMeta) return ((SkullMeta) itemMeta).getOwner();
+		if (itemMeta instanceof SkullMeta) return item + ((SkullMeta) itemMeta).getOwner() + "'s Head";
 		return "" + item;
 	}
 }
