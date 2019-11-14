@@ -1,0 +1,54 @@
+name: ShopSearcher
+version: 0.7.8
+author: ktm6060
+main: ktm6060.shopsearcher.Main
+api-version: 1.13
+description: Custom plugin for use with ShopKeepers plugin on The Wooden Spoon server.
+
+commands:
+  confirm:
+    description: Confirm actions.
+  plot:
+    clear:
+      all:
+        description: Clear all plot owners in plotOwners config file.
+      description: Clear plot ownership. /plot clear <floor> <plot>
+    set:
+      description: Set plot ownership. /plot set <floor> <plot> <owner>
+    description: Edit plot commands.
+  floor:
+    description: Display all plot owners on an entire floor. (Staff only)
+  myshop:
+    description: Opens my shop menu.
+  shop:
+    buy:
+      description: Buy a shop plot.
+    close:
+      description: Close your shop.
+    price:
+      description: Display prices of each plot size.
+    description: Opens the shop menu.
+  ss:
+    description: Shortcut for /shopsearcher.
+  shopsearcher:
+    eChest:
+      description: Shortcut for enderChest.
+    enderChest:
+      description: Display who's ender chest plot diamonds are being sent to.
+    reload:
+      description: Reloads config files.
+    setEChest:
+      description: Shortcut for setEnderChest.
+    setEnderChest:
+      description: Change who's ender chest plot diamonds are being sent to.
+    setOwnerColor:
+      description: Sets color of owner text in plot search menu. (Use Bukkit color codes only)
+    description: ShopSearcher admin commands.
+  
+permissions:
+  shopsearcher.staff:
+    description: Staff level permission, access to staff commands.
+    default: false
+  shopsearcher.admin:
+    description: Admin level permission, access to all plugin commands.
+    default: false

@@ -1,0 +1,1 @@
+ShopSearcher is a shop search plugin made for use on the TWS server with the ShopKeepers plugin.
