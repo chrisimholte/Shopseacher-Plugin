@@ -39,6 +39,7 @@ public class ItemSearchUI {
 		numPages = shopItems.size() / 45;
 		numPages += shopItems.size() % 45 > 0 ? 1 : 0;
 		Tools.displayShopItemsOnly(inv, shopItems, currPage, 45);
+		//Tools.displayShopItems(inv, shopItems, currPage);
 		shopItems.clear();
 		
 		//page switching icons

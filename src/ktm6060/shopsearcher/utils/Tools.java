@@ -11,7 +11,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import ktm6060.shopsearcher.types.ShopItem;
 import ktm6060.shopsearcher.types.ShopKeeperData;
@@ -42,10 +41,9 @@ public class Tools {
 		FileConfiguration skSaveConfig = getSKSaveConfig();
 		ArrayList<ShopKeeperData> shopkeepers = new ArrayList<ShopKeeperData>();
 		String str = "";
-		int limit =  5000;
+		int limit =  10000;
 		int breakCnt = 0;
-		int breakCntLimit = 50;
-		int breakCntExecption = 930;
+		int breakCntLimit = 50, breakCntExecption = 1000;
 		
 		boolean breakFlag;
 		for (int i = 0; i < limit; i++) {
@@ -74,25 +72,20 @@ public class Tools {
 					}
 				}
 			}
-			else
-				if (++breakCnt >= breakCntLimit && i >= breakCntExecption) break;
+			else if (++breakCnt >= breakCntLimit && i >= breakCntExecption) break;
 		}
 		
 		return shopkeepers;
 	}
 	
-	@SuppressWarnings("unused")
 	public static ArrayList<ShopItem> getUniqueShopItems() {
 		FileConfiguration skSaveConfig = getSKSaveConfig();
 		ArrayList<ShopItem> items = new ArrayList<ShopItem>();
 		ShopItem shopItem;
-		SkullMeta skull1, skull2;
-		//EnchantmentStorageMeta item1, item2;
-		//Enchantment ench1, ench2;
-		String str = "", str2 = "", itemName1 = "", itemName2 = "";
-		int limit =  1000;
-		int breakCnt = 0, cnt = 0, charLimit = 0;
-		int breakCntLimit = 50, breakCntExecption = 15;
+		String str = "", str2 = "";
+		int limit =  10000;
+		int breakCnt = 0, cnt = 0;
+		int breakCntLimit = 50, breakCntExecption = 1000;
 		
 		boolean breakFlag;
 		for (int i = 0; i < limit; i++) {
@@ -108,156 +101,16 @@ public class Tools {
 			{
 				breakCnt = cnt = 0;
 				
+				//add all shopItems to items list
 				do {
-					//find proper position in item list to place ShopItem
 					shopItem = new ShopItem(skSaveConfig, i, cnt);
-					Bukkit.getConsoleSender().sendMessage("Found " + shopItem);
-					if (items.size() == 0) {
-						Bukkit.getConsoleSender().sendMessage("Added " + shopItem);
-						items.add(shopItem);
-					}
-					else {
-/*
-						//loop through already found ShopItems in items list
-						for (int j = 0; j < items.size(); j++) {
-							breakFlag = false;
-							
-							if (shopItem.getItemString().charAt(0) < items.get(j).getItemString().charAt(0)) {
-								Bukkit.getConsoleSender().sendMessage("Added " + shopItem);
-								items.add(j, shopItem);
-								break;
-							}
-							else if (shopItem.getItemString().charAt(0) == items.get(j).getItemString().charAt(0)) {
-								//TODO Handle exception for enchanted items and player heads (sort in alphabetical order based on first enchant)
-								Bukkit.getConsoleSender().sendMessage(shopItem.toString() + " : " + items.get(j).toString() + "  " + shopItem.equals(items.get(j)));
-								if (shopItem.equals(items.get(j))) {
-									Bukkit.getConsoleSender().sendMessage(Utils.chat("&CFound duplicate item: &F" + shopItem));
-									//Handle Player Heads
-									if (shopItem.getItemMeta().equals(items.get(j).getItemMeta())) {
-										Bukkit.getConsoleSender().sendMessage(Utils.chat("&3ItemMeta is the same"));
-									}
-									else if (shopItem.getItemString().equals("PLAYER_HEAD")) {
-										skull1 = (SkullMeta) shopItem.getItemMeta();
-										skull2 = (SkullMeta) items.get(j).getItemMeta();
-										Bukkit.getConsoleSender().sendMessage("Owners: " + skull1.getOwner() + " " + skull2.getOwner());
-										//check if heads have same owner
-										if (!skull1.getOwner().equals(skull2.getOwner())) {
-											//loop through chars in skull owners
-											charLimit = (skull1.getOwner().length() < skull2.getOwner().length()) ? skull1.getOwner().length() : skull2.getOwner().length();
-											for (int k = 1; k < charLimit; k++) {
-												Bukkit.getConsoleSender().sendMessage("k: " + k + "   " + skull1.getOwner() + " : " + skull2.getOwner());
-												if (skull1.getOwner().charAt(k) < skull2.getOwner().charAt(k)) {
-													Bukkit.getConsoleSender().sendMessage("Added " + skull1.getOwner() + "'s player head");
-													items.add(j, shopItem);
-													break;
-												} else if (skull1.getOwner().charAt(k) > skull2.getOwner().charAt(k)) {
-													Bukkit.getConsoleSender().sendMessage("Added " + skull1.getOwner() + "'s player head");
-													items.add(j+1, shopItem);
-													break;
-												}
-											}
-											break;
-										}
-									}
-									//TODO support enchanted armor/tools
-									/*
-									else if (shopItem.getItemString().equals("PLACEHOLDER")) {
-										
-									}
-									/
-									
-									
-								}
-								else {
-									
-									//exceptions for enchanted items
-									if (shopItem.getItemStack().getEnchantments().size() > 0) {
-										//prevent searching array in an out of bounds index
-										if (items.size() != j+1) {
-											//Add new enchanted book after all enchanted books
-											for (int k = 0; true; k++) {
-												if (!shopItem.getItemString().equals(items.get(j+k).getItemString())) {
-													Bukkit.getConsoleSender().sendMessage("Added " + shopItem);
-													items.add(j+k, shopItem);
-													break;
-												}	
-											}
-											/*
-											if (shopItem.getItemString().equals(items.get(j+1).getItemString())) {
-												Bukkit.getConsoleSender().sendMessage(Utils.chat("&BName is exactly the same as next item"));
-												//TODO check next item and compare and sort
-												
-												//sort enchanted books by enchantment names and level
-												if (shopItem.getItemString().equals("ENCHANTED_BOOK")) {
-													item1 = (EnchantmentStorageMeta) shopItem.getItemMeta();
-													Bukkit.getConsoleSender().sendMessage(item1.getStoredEnchants().toString());
-													//Bukkit.getConsoleSender().sendMessage("" + item1.getEnchantLevel(Enchantment.DURABILITY));
-													//ench1 = (Enchantment) item1.getStoredEnchants().get(new Enchantment);
-													//Bukkit.getConsoleSender().sendMessage(ench1.toString());
-												}
-											}
-											/
-											break;
-										}
-									}
-									/*
-									//check item after to ensure correct positioning
-									for (int k = 0; true; k++) {
-										if (!shopItem.getItemString().equals(items.get(j+k).getItemString())) {
-											Bukkit.getConsoleSender().sendMessage("Added " + shopItem);
-											items.add(j+k, shopItem);
-											break;
-										}	
-									}
-									/
-									
-									//check for underscore in item name
-									itemName1 = shopItem.getItemString();
-									itemName2 = items.get(j).getItemString();
-									if (itemName1.contains("_") && itemName1.substring(0, itemName1.indexOf("_")).equals(itemName2.indexOf("_"))) {
-										Bukkit.getConsoleSender().sendMessage("TEST: " + itemName1.substring(itemName1.indexOf("_")+1));
-										itemName1 = itemName1.substring(itemName1.indexOf("_")+1);
-										itemName2 = itemName2.substring(itemName2.indexOf("_")+1);
-									}
-									
-									//loop through chars in ItemMaterialStrings
-									charLimit = (itemName1.length() < itemName2.length()) ? itemName1.length() : itemName2.length();
-									for (int k = 0; k < charLimit; k++) {
-										if (itemName1.charAt(k) < itemName2.charAt(k)) {
-											Bukkit.getConsoleSender().sendMessage("Added " + shopItem);
-											items.add(j, shopItem);
-											break;
-										} else if (itemName1.charAt(k) > itemName2.charAt(k)) {
-											Bukkit.getConsoleSender().sendMessage("Added " + shopItem);
-											items.add(j+1, shopItem);
-											break;
-										}
-									}
-									Bukkit.getConsoleSender().sendMessage(Utils.chat("&CEXIT"));
-									//This break is required, otherwise infinite loop will occur
-									break;
-								}
-							}
-							else if (j == items.size()-1) {
-								Bukkit.getConsoleSender().sendMessage("Added " + shopItem);
-								items.add(shopItem);
-								break;
-							}
-						}
-*/
-						
-						items.add(shopItem);
-						
-					}
+					items.add(shopItem);
 					
 					str = "" + skSaveConfig.getString(i + ".offers." + ++cnt + ".item");
 					str2 = "" + skSaveConfig.getString(i + ".offers." + cnt + ".item1");
 				} while (!str.equals("null") || !str2.equals("null"));
-				
-				Bukkit.getConsoleSender().sendMessage(items.toString());
 			}
-			else
-				if (++breakCnt >= breakCntLimit && i >= breakCntExecption) break;
+			else if (++breakCnt >= breakCntLimit && i >= breakCntExecption) break;
 		}
 		
 		items.sort(ShopItem::compareTo);
@@ -271,8 +124,6 @@ public class Tools {
 		Block chestBlock;
 		Chest chest;
 		Inventory chestInv;
-		//Material highCurrencyMaterial = (Material) getSKConfig().get("high-currency-item"), currencyMaterial = (Material) getSKConfig().get("currency-item");
-		//ItemMeta highCurrencyItemMeta, currencyItemMeta;
 		ArrayList<ShopItem> shopItems = getShopItemsFromShopKeepers(shopkeepers);
 		int cnt = 0, itemsDisplayed = 0, highCurrency, currency, amountItemsInChest;
 		
