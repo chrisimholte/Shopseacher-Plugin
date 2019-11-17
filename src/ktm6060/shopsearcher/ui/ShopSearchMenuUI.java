@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 import ktm6060.shopsearcher.Main;
 import ktm6060.shopsearcher.managers.ConfigManager;
+import ktm6060.shopsearcher.utils.Tools;
 import ktm6060.shopsearcher.utils.Utils;
 
 public class ShopSearchMenuUI {
@@ -45,6 +46,7 @@ public class ShopSearchMenuUI {
 		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&7Search By Item"))) {
 			//player.sendMessage(Utils.chat("&8[&6*&8] &6&lItemSearchUI opened."));
 			ItemSearchUI.setCurrPage(1);
+			ItemSearchUI.setShopItems(Tools.getUniqueShopItems());
 			player.openInventory(ItemSearchUI.GUI(player));
 		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&7My Shop"))) {
 			//player.sendMessage(Utils.chat("&8[&6*&8] &6&lMyShopUI opened."));

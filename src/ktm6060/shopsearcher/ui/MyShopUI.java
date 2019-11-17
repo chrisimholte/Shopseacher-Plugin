@@ -40,19 +40,7 @@ public class MyShopUI {
 		Tools.displayShopKeeperItems(inv, shopkeepers, currPage);
 		shopkeepers.clear();
 		
-		//page switching icons
-		if (numPages > 1) {
-			if (currPage == 1) {
-				//Utils.createItem(inv, "black_stained_glass_pane", 1, 45, " ");
-				Utils.createItem(inv, "writable_book", 1, 53, "&7Page " + (currPage + 1));
-			} else if (currPage == numPages) {
-				Utils.createItem(inv, "writable_book", 1, 45, "&7Page " + (currPage - 1));
-				//Utils.createItem(inv, "black_stained_glass_pane", 1, 53, " ");
-			} else {
-				Utils.createItem(inv, "writable_book", 1, 53, "&7Page " + (currPage + 1));
-				Utils.createItem(inv, "writable_book", 1, 45, "&7Page " + (currPage - 1));
-			}
-		}
+		Tools.setPageSwitchingIcons(inv, numPages, currPage);
 		
 		//go back icon
 		Utils.createItem(inv, "barrier", 1, 49, "&CGo Back");
@@ -66,7 +54,7 @@ public class MyShopUI {
 			//player.sendMessage(Utils.chat("&8[&6*&8] &6&lBack to ShopSearchMenuUI."));
 			player.openInventory(ShopSearchMenuUI.GUI(player));
 		}
-		else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("&7Page ")))
+		else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("Page ")))
 		{
 			/*
 			 * Change page of UI

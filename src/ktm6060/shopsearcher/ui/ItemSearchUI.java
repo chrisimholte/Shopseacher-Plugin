@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import ktm6060.shopsearcher.types.ShopItem;
 import ktm6060.shopsearcher.utils.Tools;
@@ -20,7 +21,7 @@ public class ItemSearchUI {
 	private static int currPage = 1;
 	private static int numPages = 0;
 	private static ArrayList<ShopItem> shopItems = new ArrayList<ShopItem>();
-	
+
 	public static void initialize() {
 		inventoryName = Utils.chat("&8Item Search (Page " + currPage + ")");
 		
@@ -35,26 +36,11 @@ public class ItemSearchUI {
 		/*
 		 * Add items for sale from owners shop
 		 */
-		shopItems = Tools.getUniqueShopItems();
 		numPages = shopItems.size() / 45;
 		numPages += shopItems.size() % 45 > 0 ? 1 : 0;
-		Tools.displayShopItemsOnly(inv, shopItems, currPage, 45, true);
-		//Tools.displayShopItems(inv, shopItems, currPage);
-		//shopItems.clear();
+		Tools.displayShopItemsOnly(inv, shopItems, currPage, 45);
 		
-		//page switching icons
-		if (numPages > 1) {
-			if (currPage == 1) {
-				//Utils.createItem(inv, "black_stained_glass_pane", 1, 45, " ");
-				Utils.createItem(inv, "writable_book", 1, 53, "&7Page " + (currPage + 1));
-			} else if (currPage == numPages) {
-				Utils.createItem(inv, "writable_book", 1, 45, "&7Page " + (currPage - 1));
-				//Utils.createItem(inv, "black_stained_glass_pane", 1, 53, " ");
-			} else {
-				Utils.createItem(inv, "writable_book", 1, 53, "&7Page " + (currPage + 1));
-				Utils.createItem(inv, "writable_book", 1, 45, "&7Page " + (currPage - 1));
-			}
-		}
+		Tools.setPageSwitchingIcons(inv, numPages, currPage);
 		
 		//go back icon
 		Utils.createItem(inv, "barrier", 1, 49, "&CGo Back");
@@ -63,12 +49,13 @@ public class ItemSearchUI {
 		return toReturnInventory;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void clicked(Player player, int slot, ItemStack clicked, Inventory inv) {
 		if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&CGo Back"))) {
 			//player.sendMessage(Utils.chat("&8[&6*&8] &6&lBack to ShopSearchMenuUI."));
 			player.openInventory(ShopSearchMenuUI.GUI(player));
 		}
-		else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("&7Page ")))
+		else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("Page ")))
 		{
 			/*
 			 * Change page of UI
@@ -85,14 +72,30 @@ public class ItemSearchUI {
 		}
 		else
 		{
-			//TODO handle special cases for player heads and enchanted books
-			
-			Bukkit.getConsoleSender().sendMessage(Tools.getAllShopItemsMap().get(Tools.HashString(clicked.getType().toString())).toString());
-			player.openInventory(ShopItemsUI.GUI(player, Tools.getAllShopItemsMap().get(Tools.HashString(clicked.getType().toString()))));
+			//handle special cases for player heads and enchanted books
+			@SuppressWarnings("unchecked")
+			ArrayList<ShopItem> list = (ArrayList<ShopItem>) Tools.getAllShopItemsMap().get(Tools.HashString(clicked.getType().toString())).clone();
+			for (int i = 0; i < list.size(); i++) {
+				if (clicked.getType().toString().equals("ENCHANTED_BOOK")) {
+					if (!list.get(i).getItemMeta().equals(clicked.getItemMeta()))
+						list.remove(i--);
+				} else if (clicked.getType().toString().equals("PLAYER_HEAD")) {
+					if (!((SkullMeta) list.get(i).getItemMeta()).getOwner().equals(((SkullMeta) clicked.getItemMeta()).getOwner()))
+						list.remove(i--);
+				} else if (!list.get(i).toString().equals(clicked.getType().toString())) {
+					list.remove(i--);
+				}
+			}
+			list.sort(ShopItem::compareToDeal);
+			player.openInventory(ShopItemsUI.GUI(player, list));
 		}
 	}
 	
 	public static void setCurrPage(int cp) {
 		currPage = cp;
+	}
+	
+	public static void setShopItems(ArrayList<ShopItem> shopItems) {
+		ItemSearchUI.shopItems = shopItems;
 	}
 }

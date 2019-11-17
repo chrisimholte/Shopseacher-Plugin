@@ -13,6 +13,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import ktm6060.shopsearcher.Main;
+import ktm6060.shopsearcher.managers.ConfigManager;
 import ktm6060.shopsearcher.types.ShopItem;
 import ktm6060.shopsearcher.types.ShopKeeperData;
 
@@ -134,21 +136,50 @@ public class Tools {
 			}
 			else if (++breakCnt >= breakCntLimit && i >= breakCntExecption) break;
 		}
-		Bukkit.getConsoleSender().sendMessage("Map: " + getAllShopItemsMap().toString());
+		//Bukkit.getConsoleSender().sendMessage("Map: " + getAllShopItemsMap().toString());
 		items.sort(ShopItem::compareTo);
 		return items;
 	}
 	
 	public static void displayShopKeeperItems(Inventory inv, ArrayList<ShopKeeperData> shopkeepers, int currPage) {
-		ShopItem shopItem;
-		ItemStack[] chestItems = null;
-		Location chestLocation;
-		Block chestBlock;
-		Chest chest;
-		Inventory chestInv;
-		ArrayList<ShopItem> shopItems = getShopItemsFromShopKeepers(shopkeepers);
-		int cnt = 0, itemsDisplayed = 0, highCurrency, currency, amountItemsInChest;
+		displayShopItemInfo(inv, getShopItemsFromShopKeepers(shopkeepers), currPage);
+	}
+	
+	private static int getStock(ShopItem shopItem) {
+		Location chestLocation = new Location(shopItem.getChestW(), shopItem.getChestX(), shopItem.getChestY(), shopItem.getChestZ());
+		Block chestBlock = chestLocation.getBlock();
+		Chest chest = (Chest) chestBlock.getState();
+		Inventory chestInv = chest.getInventory();
+		ItemStack[] chestItems = chestInv.getContents();		
 		
+		int amountItemsInChest = 0;
+		for (int j = 0; j < chestItems.length; j++) {
+			if (chestItems[j] != null) {
+				if (chestItems[j].getType().equals(shopItem.getType()) && chestItems[j].getItemMeta().equals(shopItem.getItemMeta()))
+					amountItemsInChest += chestItems[j].getAmount();
+			}
+		}
+		return amountItemsInChest;
+	}
+	
+	public static void displayShopItemsOnly(Inventory inv, ArrayList<ShopItem> shopItems, int currPage, int max) {
+		int itemsDisplayed = 0;
+		for (int i = (currPage-1)*max; i < shopItems.size(); i++) {
+			if (itemsDisplayed >= max) break;
+			
+			Utils.displayItem(inv, shopItems.get(i).toString(), 1, i, shopItems.get(i).getItemMeta());
+			itemsDisplayed++;
+		}
+	}
+	
+	public static void displayShopItems(Inventory inv, ArrayList<ShopItem> shopItems, int currPage) {
+		displayShopItemInfo(inv, shopItems, currPage);
+		displayShopItemLocation(inv, shopItems, currPage);
+	}
+	
+	private static void displayShopItemInfo(Inventory inv, ArrayList<ShopItem> shopItems, int currPage) {
+		ShopItem shopItem;
+		int cnt = 0, itemsDisplayed = 0, highCurrency, currency;
 		//display all items, prices and stock for current page
 		for (int i = (currPage-1)*9; i < shopItems.size(); i++) {
 			if (itemsDisplayed >= 9) break;
@@ -168,23 +199,9 @@ public class Tools {
 			else
 				Utils.displayItem(inv, shopItem.getPriceItemStack().getType().toString(), shopItem.getPrice(), cnt+8, shopItem.getPriceItemStack().getItemMeta());
 			
-			//get stock
-			chestLocation = new Location(shopItem.getChestW(), shopItem.getChestX(), shopItem.getChestY(), shopItem.getChestZ());
-			chestBlock = chestLocation.getBlock();
-			chest = (Chest) chestBlock.getState();
-			chestInv = chest.getInventory();
-			chestItems = chestInv.getContents();		
 			
-			amountItemsInChest = 0;
-			for (int j = 0; j < chestItems.length; j++) {
-				if (chestItems[j] != null) {
-					if (chestItems[j].getType().equals(shopItem.getType()) && chestItems[j].getItemMeta().equals(shopItem.getItemMeta()))
-						amountItemsInChest += chestItems[j].getAmount();
-				}
-			}
-			
-			//display stock
-			if (amountItemsInChest / shopItem.getAmount() > 0)
+			//get and display stock
+			if (getStock(shopItem) / shopItem.getAmount() > 0)
 				Utils.createItem(inv, "LIME_CONCRETE", 1, i+27 - (9*(i/9)), "&AIn Stock!");
 			else
 				Utils.createItem(inv, "RED_CONCRETE", 1, i+27 - (9*(i/9)), "&COut of Stock!");
@@ -193,23 +210,32 @@ public class Tools {
 		}
 	}
 	
-	public static void displayShopItemsOnly(Inventory inv, ArrayList<ShopItem> shopItems, int currPage, int max, boolean fixedAmt) {
-		int itemsDisplayed = 0;
-		for (int i = (currPage-1)*max; i < shopItems.size(); i++) {
-			if (itemsDisplayed >= max) break;
-			//if amount == -1, then always display item with 1 amount
-			if (fixedAmt)
-				Utils.displayItem(inv, shopItems.get(i).toString(), 1, i, shopItems.get(i).getItemMeta());
-			else
-				Utils.displayItem(inv, shopItems.get(i).toString(), shopItems.get(i).getAmount(), i, shopItems.get(i).getItemMeta());
+	private static void displayShopItemLocation(Inventory inv, ArrayList<ShopItem> shopItems, int currPage) {
+		ShopItem shopItem;
+		int itemsDisplayed = 0, floor = 0, plot = 0;
+		ConfigManager plotConfig = Main.getPlotOwnersConfig();
+		
+		//display all items, prices and stock for current page
+		for (int i = (currPage-1)*9; i < shopItems.size(); i++) {
+			if (itemsDisplayed >= 9) break;
+			shopItem = shopItems.get(i);
+			
+			//get floor and plot of owner
+			Bukkit.getConsoleSender().sendMessage(plotConfig.getConfig().getInt("numFloors") + " " + plotConfig.getConfig().getInt("numPlots"));
+			for (int f = 0; f < plotConfig.getConfig().getInt("numFloors"); f++) {
+				for (int p = 0; p < plotConfig.getConfig().getInt("numPlots"); p++) {
+					Bukkit.getConsoleSender().sendMessage(plotConfig.getConfig().getString("plots.floor" + f + ".plot" + p) + " : " + (shopItem.getowner()));
+					if ((plotConfig.getConfig().getString("plots.floor" + f + ".plot" + p) + "").equals(shopItem.getowner())) {
+						floor = f;
+						plot = p;
+						break;
+					}
+				}
+			}
+			
+			Utils.createItem(inv, "PAPER", 1, i+36 - (9*(i/9)), "&FF" + floor + " Plot " + plot, Main.getPlotOwnersConfig().getConfig().getString("ownerTextColor") + "Owner: " + shopItem.getowner());
 			itemsDisplayed++;
 		}
-	}
-	
-	public static void displayShopItems(Inventory inv, ArrayList<ShopItem> shopItems, int currPage) {
-		displayShopItemsOnly(inv, shopItems, currPage, 9, false);
-		//TODO display prices and stock
-		
 	}
 	
 	public static ArrayList<ShopItem> getShopItemsFromShopKeepers(ArrayList<ShopKeeperData> shopkeepers) {
@@ -219,6 +245,19 @@ public class Tools {
 				shopItems.add(shopkeepers.get(i).getItems().get(j));
 		}
 		return shopItems;
+	}
+	
+	public static void setPageSwitchingIcons(Inventory inv, int numPages, int currPage) {
+		if (numPages > 1) {
+			if (currPage == 1)
+				Utils.createItem(inv, "writable_book", 1, 53, "&6Page " + (currPage + 1));
+			else if (currPage == numPages)
+				Utils.createItem(inv, "writable_book", 1, 45, "&6Page " + (currPage - 1));
+			else {
+				Utils.createItem(inv, "writable_book", 1, 53, "&6Page " + (currPage + 1));
+				Utils.createItem(inv, "writable_book", 1, 45, "&6Page " + (currPage - 1));
+			}
+		}
 	}
 	
 	public static int getNumPages(ArrayList<ShopKeeperData> shopkeepers) {

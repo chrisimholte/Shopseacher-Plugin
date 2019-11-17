@@ -14,6 +14,7 @@ public class ShopItem {
 	private ItemStack itemStack, priceItemStack;
 	private ItemMeta itemMeta;
 	private Material item;
+	private String owner;
 	private int shopkeeperID, shopItemID, amount, price, chestX, chestY, chestZ;
 	private World chestW;
 	
@@ -44,6 +45,10 @@ public class ShopItem {
 	
 	public ItemMeta getItemMeta() {
 		return itemMeta;
+	}
+	
+	public String getowner() {
+		return owner;
 	}
 
 	public int getAmount() {
@@ -81,6 +86,7 @@ public class ShopItem {
 		this.priceItemStack = skSaveConfig.getItemStack(shopkeeperID + ".offers." + shopItemID + ".item1");
 		this.itemMeta = itemStack.getItemMeta();
 		this.item = itemStack.getType();
+		this.owner = skSaveConfig.getString(shopkeeperID + ".owner");
 		this.amount = itemStack.getAmount();
 		this.price = skSaveConfig.getInt(shopkeeperID + ".offers." + shopItemID + ".price");
 		if (price == 0)
@@ -96,8 +102,13 @@ public class ShopItem {
 		return false;
 	}
 	
-	public int compareTo(ShopItem o) {
-		return item.toString().compareToIgnoreCase(o.toString());
+	public int compareTo(ShopItem shopItem) {
+		return item.toString().compareToIgnoreCase(shopItem.toString());
+	}
+	
+	public int compareToDeal(ShopItem shopItem) {
+		//return price per item
+		return (price/amount) - (shopItem.getPrice()/shopItem.getAmount());
 	}
 	
 	public String toString() {
