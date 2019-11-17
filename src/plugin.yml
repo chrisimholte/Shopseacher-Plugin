@@ -1,5 +1,5 @@
 name: ShopSearcher
-version: 0.8.9
+version: 0.9.0
 author: ktm6060
 main: ktm6060.shopsearcher.Main
 api-version: 1.13
