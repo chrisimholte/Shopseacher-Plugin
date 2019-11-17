@@ -2,6 +2,7 @@ package ktm6060.shopsearcher.utils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,6 +18,9 @@ import ktm6060.shopsearcher.types.ShopKeeperData;
 
 public class Tools {
 	
+	//private static ArrayList<ShopItem> allShopItems = new ArrayList<ShopItem>();
+	private static HashMap<Integer, ArrayList<ShopItem>> allShopItemsMap = new HashMap<Integer, ArrayList<ShopItem>>();
+
 	public static FileConfiguration getSKConfig() {
 		FileConfiguration skConfig = null;
 		if (Bukkit.getPluginCommand("Shopkeepers").getPlugin().getDataFolder().exists()) {
@@ -86,6 +90,7 @@ public class Tools {
 		int limit =  10000;
 		int breakCnt = 0, cnt = 0;
 		int breakCntLimit = 50, breakCntExecption = 1000;
+		allShopItemsMap.clear();
 		
 		boolean breakFlag;
 		for (int i = 0; i < limit; i++) {
@@ -104,7 +109,24 @@ public class Tools {
 				//add all shopItems to items list
 				do {
 					shopItem = new ShopItem(skSaveConfig, i, cnt);
-					items.add(shopItem);
+					addToMap(shopItem);
+					
+					if (items.size() == 0)
+						items.add(shopItem);
+					else {
+						for (int j = 0; j < items.size(); j++) {
+							if (shopItem.toString().equals("ENCHANTED_BOOK")) {
+								items.add(shopItem);
+								break;
+							}
+							else if (items.get(j).getItemStringSort().equals(shopItem.getItemStringSort()))
+								break;
+							else if (j == items.size()-1) {
+								items.add(shopItem);
+								break;
+							}
+						}
+					}
 					
 					str = "" + skSaveConfig.getString(i + ".offers." + ++cnt + ".item");
 					str2 = "" + skSaveConfig.getString(i + ".offers." + cnt + ".item1");
@@ -112,7 +134,7 @@ public class Tools {
 			}
 			else if (++breakCnt >= breakCntLimit && i >= breakCntExecption) break;
 		}
-		
+		Bukkit.getConsoleSender().sendMessage("Map: " + getAllShopItemsMap().toString());
 		items.sort(ShopItem::compareTo);
 		return items;
 	}
@@ -131,7 +153,7 @@ public class Tools {
 		for (int i = (currPage-1)*9; i < shopItems.size(); i++) {
 			if (itemsDisplayed >= 9) break;
 			shopItem = shopItems.get(i);
-			Utils.displayItem(inv, shopItem.getItemString(), shopItem.getAmount(), cnt++, shopItem.getItemMeta());
+			Utils.displayItem(inv, shopItem.toString(), shopItem.getAmount(), cnt++, shopItem.getItemMeta());
 			
 			//set price
 			if (shopItem.getPriceItemStack() == null) {
@@ -171,18 +193,23 @@ public class Tools {
 		}
 	}
 	
-	public static void displayShopItemsOnly(Inventory inv, ArrayList<ShopItem> shopItems, int currPage, int max) {
+	public static void displayShopItemsOnly(Inventory inv, ArrayList<ShopItem> shopItems, int currPage, int max, boolean fixedAmt) {
 		int itemsDisplayed = 0;
 		for (int i = (currPage-1)*max; i < shopItems.size(); i++) {
 			if (itemsDisplayed >= max) break;
-			Utils.displayItem(inv, shopItems.get(i).getItemString(), shopItems.get(i).getAmount(), i, shopItems.get(i).getItemMeta());
+			//if amount == -1, then always display item with 1 amount
+			if (fixedAmt)
+				Utils.displayItem(inv, shopItems.get(i).toString(), 1, i, shopItems.get(i).getItemMeta());
+			else
+				Utils.displayItem(inv, shopItems.get(i).toString(), shopItems.get(i).getAmount(), i, shopItems.get(i).getItemMeta());
 			itemsDisplayed++;
 		}
 	}
 	
 	public static void displayShopItems(Inventory inv, ArrayList<ShopItem> shopItems, int currPage) {
-		displayShopItemsOnly(inv, shopItems, currPage, 9);
-		//TODO display prices
+		displayShopItemsOnly(inv, shopItems, currPage, 9, false);
+		//TODO display prices and stock
+		
 	}
 	
 	public static ArrayList<ShopItem> getShopItemsFromShopKeepers(ArrayList<ShopKeeperData> shopkeepers) {
@@ -198,13 +225,17 @@ public class Tools {
 		int totalItemsForSale = 0, pagesNeeded = 0;
 		
 		for (int i = 0; i < shopkeepers.size(); i++) {
-			for (int j = 0; j < shopkeepers.get(i).getItemsForSale(); j++)
+			for (int j = 0; j < (shopkeepers.get(i)).getItemsForSale(); j++)
 				totalItemsForSale++;
 		}
 		
 		pagesNeeded = totalItemsForSale / 9;
 		if (totalItemsForSale % 9 > 0) pagesNeeded++;
 		return pagesNeeded;
+	}
+	
+	public static int getNumPagesItems(ArrayList<ShopItem> shopItems) {
+		return shopItems.size() % 9 > 0 ? shopItems.size() / 9 + 1 : shopItems.size() / 9;
 	}
 	
 	public static String formatMaterialString(String materialString) {
@@ -217,6 +248,25 @@ public class Tools {
 				formatedStr += materialString.substring(i,i+1).toLowerCase();
 		}
 		return formatedStr;
+	}
+	
+	private static void addToMap(ShopItem shopItem) {
+		ArrayList<ShopItem> list = allShopItemsMap.get(HashString(shopItem.toString()));
+		if (list == null)
+			list = new ArrayList<ShopItem>();
+		
+		list.add(shopItem);
+		allShopItemsMap.put(HashString(shopItem.toString()), list);
+	}
+	
+	public static Integer HashString(String str) {
+		return HashString(str, str.length()-1) / 10;
+	}
+	
+	private static Integer HashString(String str, int num) {
+		if (num < 0) return 0;
+		else
+			return str.charAt(num) + HashString(str.substring(0, num), --num);
 	}
 	
 	private static String assignRarityColor(String str) {
@@ -294,5 +344,9 @@ public class Tools {
 		default:
 			return 32;
 		}
+	}
+	
+	public static HashMap<Integer, ArrayList<ShopItem>> getAllShopItemsMap() {
+		return allShopItemsMap;
 	}
 }

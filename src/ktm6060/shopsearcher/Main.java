@@ -14,6 +14,7 @@ import ktm6060.shopsearcher.ui.ItemSearchUI;
 import ktm6060.shopsearcher.ui.MyShopUI;
 import ktm6060.shopsearcher.ui.PlotSearchUI;
 import ktm6060.shopsearcher.ui.PlotUI;
+import ktm6060.shopsearcher.ui.ShopItemsUI;
 import ktm6060.shopsearcher.ui.ShopSearchMenuUI;
 
 public class Main extends JavaPlugin {
@@ -47,6 +48,7 @@ public class Main extends JavaPlugin {
 		ItemSearchUI.initialize();
 		MyShopUI.initialize();
 		PlotUI.initialize();
+		ShopItemsUI.initialize();
 	}
 
 	public void loadConfigManager() {

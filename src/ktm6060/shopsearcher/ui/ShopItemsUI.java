@@ -7,11 +7,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import ktm6060.shopsearcher.types.ShopKeeperData;
+import ktm6060.shopsearcher.types.ShopItem;
 import ktm6060.shopsearcher.utils.Tools;
 import ktm6060.shopsearcher.utils.Utils;
 
-public class MyShopUI {
+public class ShopItemsUI {
 
 	private static Inventory inv;
 	public static String inventoryName;
@@ -19,12 +19,17 @@ public class MyShopUI {
 	private static int invBoxes = invRows * 9;
 	private static int currPage = 1;
 	private static int numPages = 0;
-	private static ArrayList<ShopKeeperData> shopkeepers = new ArrayList<ShopKeeperData>();
+	private static ArrayList<ShopItem> shopItems = new ArrayList<ShopItem>();
 	
 	public static void initialize() {
-		inventoryName = Utils.chat("&8My Shop (Page " + currPage + ")");
+		inventoryName = Utils.chat("&8Offers");
 		
 		inv = Bukkit.createInventory(null, invBoxes);
+	}
+	
+	public static Inventory GUI(Player player, ArrayList<ShopItem> list) {
+		shopItems = list;
+		return GUI(player);
 	}
 	
 	public static Inventory GUI(Player player) {
@@ -35,10 +40,9 @@ public class MyShopUI {
 		/*
 		 * Add items for sale from owners shop
 		 */
-		shopkeepers = Tools.getShopKeeperDataByOwner(player.getDisplayName());
-		numPages = Tools.getNumPages(shopkeepers);
-		Tools.displayShopKeeperItems(inv, shopkeepers, currPage);
-		shopkeepers.clear();
+		numPages = Tools.getNumPagesItems(shopItems);
+		Tools.displayShopItems(inv, shopItems, currPage);
+		shopItems.clear();
 		
 		//page switching icons
 		if (numPages > 1) {
@@ -64,7 +68,7 @@ public class MyShopUI {
 	public static void clicked(Player player, int slot, ItemStack clicked, Inventory inv) {
 		if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&CGo Back"))) {
 			//player.sendMessage(Utils.chat("&8[&6*&8] &6&lBack to ShopSearchMenuUI."));
-			player.openInventory(ShopSearchMenuUI.GUI(player));
+			player.openInventory(ItemSearchUI.GUI(player));
 		}
 		else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("&7Page ")))
 		{
@@ -80,7 +84,7 @@ public class MyShopUI {
 				currPage++;
 			
 			inventoryName = Utils.chat("&8My Shop (Page " + currPage + ")");
-			player.openInventory(MyShopUI.GUI(player));
+			player.openInventory(ShopItemsUI.GUI(player));
 		}
 	}
 	

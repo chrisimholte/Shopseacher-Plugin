@@ -7,11 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import ktm6060.shopsearcher.Main;
-import ktm6060.shopsearcher.ui.ItemSearchUI;
-import ktm6060.shopsearcher.ui.MyShopUI;
-import ktm6060.shopsearcher.ui.PlotSearchUI;
-import ktm6060.shopsearcher.ui.PlotUI;
-import ktm6060.shopsearcher.ui.ShopSearchMenuUI;
+import ktm6060.shopsearcher.ui.*;
 
 public class InventoryClickListener implements Listener {
 	
@@ -82,6 +78,17 @@ public class InventoryClickListener implements Listener {
 			}
 			if (title.equals(PlotUI.inventoryName)) {
 				PlotUI.clicked((Player) e.getWhoClicked(), e.getSlot(), e.getCurrentItem(), e.getInventory());
+			}
+		} //actions for ShopItemsUI
+		else if(title.equals(ShopItemsUI.inventoryName))
+		{
+			e.setCancelled(true);
+			
+			if (e.getCurrentItem() == null) {
+				return;
+			}
+			if (title.equals(ShopItemsUI.inventoryName)) {
+				ShopItemsUI.clicked((Player) e.getWhoClicked(), e.getSlot(), e.getCurrentItem(), e.getInventory());
 			}
 		}
 		

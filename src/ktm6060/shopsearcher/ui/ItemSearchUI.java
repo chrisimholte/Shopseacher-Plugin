@@ -38,9 +38,9 @@ public class ItemSearchUI {
 		shopItems = Tools.getUniqueShopItems();
 		numPages = shopItems.size() / 45;
 		numPages += shopItems.size() % 45 > 0 ? 1 : 0;
-		Tools.displayShopItemsOnly(inv, shopItems, currPage, 45);
+		Tools.displayShopItemsOnly(inv, shopItems, currPage, 45, true);
 		//Tools.displayShopItems(inv, shopItems, currPage);
-		shopItems.clear();
+		//shopItems.clear();
 		
 		//page switching icons
 		if (numPages > 1) {
@@ -82,6 +82,13 @@ public class ItemSearchUI {
 				currPage++;
 			
 			player.openInventory(ItemSearchUI.GUI(player));
+		}
+		else
+		{
+			//TODO handle special cases for player heads and enchanted books
+			
+			Bukkit.getConsoleSender().sendMessage(Tools.getAllShopItemsMap().get(Tools.HashString(clicked.getType().toString())).toString());
+			player.openInventory(ShopItemsUI.GUI(player, Tools.getAllShopItemsMap().get(Tools.HashString(clicked.getType().toString()))));
 		}
 	}
 	

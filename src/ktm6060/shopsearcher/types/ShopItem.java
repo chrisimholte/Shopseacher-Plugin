@@ -24,7 +24,9 @@ public class ShopItem {
 		updateData();
 	}
 	
-	public String getItemString() {
+	@SuppressWarnings("deprecation")
+	public String getItemStringSort() {
+		if (itemMeta instanceof SkullMeta) return item + ((SkullMeta) itemMeta).getOwner() + "'s Head";
 		return "" + item;
 	}
 	
@@ -98,9 +100,7 @@ public class ShopItem {
 		return item.toString().compareToIgnoreCase(o.toString());
 	}
 	
-	@SuppressWarnings("deprecation")
 	public String toString() {
-		if (itemMeta instanceof SkullMeta) return item + ((SkullMeta) itemMeta).getOwner() + "'s Head";
-		return "" + item;
+		return item.toString();
 	}
 }
