@@ -100,6 +100,7 @@ public class Tools {
 			
 			try {
 				skSaveConfig.get(i + ".owner").equals(null);
+				skSaveConfig.getItemStack(i + ".offers.0.item").getItemMeta();
 			} catch (NullPointerException e) {
 				breakFlag = false;
 			}
@@ -167,7 +168,7 @@ public class Tools {
 		for (int i = (currPage-1)*max; i < shopItems.size(); i++) {
 			if (itemsDisplayed >= max) break;
 			
-			Utils.displayItem(inv, shopItems.get(i).toString(), 1, i, shopItems.get(i).getItemMeta());
+			Utils.displayItem(inv, shopItems.get(i).toString(), 1, i - (max*(i/max)), shopItems.get(i).getItemMeta());
 			itemsDisplayed++;
 		}
 	}
@@ -221,16 +222,16 @@ public class Tools {
 			shopItem = shopItems.get(i);
 			
 			//get floor and plot of owner
-			Bukkit.getConsoleSender().sendMessage(plotConfig.getConfig().getInt("numFloors") + " " + plotConfig.getConfig().getInt("numPlots"));
+			floor = plot = 0;
 			for (int f = 0; f < plotConfig.getConfig().getInt("numFloors"); f++) {
 				for (int p = 0; p < plotConfig.getConfig().getInt("numPlots"); p++) {
-					Bukkit.getConsoleSender().sendMessage(plotConfig.getConfig().getString("plots.floor" + f + ".plot" + p) + " : " + (shopItem.getowner()));
 					if ((plotConfig.getConfig().getString("plots.floor" + f + ".plot" + p) + "").equals(shopItem.getowner())) {
 						floor = f;
 						plot = p;
 						break;
 					}
 				}
+				if (floor != 0) break;
 			}
 			
 			Utils.createItem(inv, "PAPER", 1, i+36 - (9*(i/9)), "&FF" + floor + " Plot " + plot, Main.getPlotOwnersConfig().getConfig().getString("ownerTextColor") + "Owner: " + shopItem.getowner());

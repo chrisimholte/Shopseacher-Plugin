@@ -57,6 +57,7 @@ public class ItemSearchUI {
 		}
 		else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("Page ")))
 		{
+			
 			/*
 			 * Change page of UI
 			 */
@@ -68,6 +69,7 @@ public class ItemSearchUI {
 			else if (targetFloor > currPage)
 				currPage++;
 			
+			Bukkit.getConsoleSender().sendMessage("Change to page " + currPage);
 			player.openInventory(ItemSearchUI.GUI(player));
 		}
 		else

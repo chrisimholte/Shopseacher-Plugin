@@ -29,9 +29,9 @@ public class ShopSearchMenuUI {
 		Inventory toReturnInventory = Bukkit.createInventory(null, invBoxes, inventoryName);
 		
 		//TO-DO: change items
-		Utils.createItem(inv, "paper", 1, 0, "&7Search By Shop", "&3See what items a plot sells!", "&4PlotMenuUI");
-		Utils.createItem(inv, "paper", 1, 1, "&7Search By Item", "&5See all items being sold!", "&4ItemSearchUI");
-		Utils.createPlayerSkull(inv, 1, 2, "&7My Shop", player.getName(), "&7Check your shops items and stock!", "&4MyShopUI");
+		Utils.createItem(inv, "paper", 1, 0, "&FSearch By Shop", "&3See what items a plot sells!");
+		Utils.createItem(inv, "paper", 1, 1, "&FSearch By Item", "&5See all items being sold!");
+		Utils.createPlayerSkull(inv, 1, 2, "&FMy Shop", player.getName(), "&7Check your shops items and stock!");
 		
 		toReturnInventory.setContents(inv.getContents());
 		return toReturnInventory;
@@ -39,16 +39,16 @@ public class ShopSearchMenuUI {
 	
 	public static void clicked(Player player, int slot, ItemStack clicked, Inventory inv) {
 		
-		if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&7Search By Shop"))) {
+		if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("Search By Shop"))) {
 			//player.sendMessage(Utils.chat("&8[&6*&8] &6&lPlotSearchUI opened."));
 			PlotSearchUI.setCurrPage(1);
 			player.openInventory(PlotSearchUI.GUI(player));
-		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&7Search By Item"))) {
+		} else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("Search By Item"))) {
 			//player.sendMessage(Utils.chat("&8[&6*&8] &6&lItemSearchUI opened."));
 			ItemSearchUI.setCurrPage(1);
 			ItemSearchUI.setShopItems(Tools.getUniqueShopItems());
 			player.openInventory(ItemSearchUI.GUI(player));
-		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&7My Shop"))) {
+		} else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("My Shop"))) {
 			//player.sendMessage(Utils.chat("&8[&6*&8] &6&lMyShopUI opened."));
 			ConfigManager plotConfig = Main.getPlotOwnersConfig();
 			int floors = plotConfig.getConfig().getInt("numFloors");

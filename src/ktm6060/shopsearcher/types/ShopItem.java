@@ -80,6 +80,7 @@ public class ShopItem {
 	}
 
 	public void updateData() {
+		Bukkit.getConsoleSender().sendMessage("[ShopSearcher]: Reading data for Shopkeeper: " + shopkeeperID + "  ShopItem: " + shopItemID);
 		this.itemStack = skSaveConfig.getItemStack(shopkeeperID + ".offers." + shopItemID + ".item");
 		if (itemStack == null)
 			this.itemStack = skSaveConfig.getItemStack(shopkeeperID + ".offers." + shopItemID + ".resultItem");
