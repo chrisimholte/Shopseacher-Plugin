@@ -54,10 +54,10 @@ public class ShopSearchMenuUI {
 			int floors = plotConfig.getConfig().getInt("numFloors");
 			int plots = plotConfig.getConfig().getInt("numPlots");
 			
-			for (int i = 0; i < floors; i++) {
-				for (int j = 0; j < plots; j++) {
+			for (int i = 1; i <= floors; i++) {
+				for (int j = 1; j <= plots; j++) {
 					if (plotConfig.getConfig().getString("plots.floor" + i + ".plot" + j) != null) {
-						if (plotConfig.getConfig().getString("plots.floor" + i + ".plot" + j).equals(player.getDisplayName())) {
+						if (plotConfig.getConfig().getString("plots.floor" + i + ".plot" + j).equals(player.getDisplayName()) || plotConfig.getConfig().getString("plots.floor" + i + ".plot" + j).equals(player.getName())) {
 							MyShopUI.setCurrPage(1);
 							player.openInventory(MyShopUI.GUI(player));
 							return;

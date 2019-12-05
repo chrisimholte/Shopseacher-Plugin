@@ -22,7 +22,7 @@ public class ShopItemsUI {
 	private static ArrayList<ShopItem> shopItems = new ArrayList<ShopItem>();
 	
 	public static void initialize() {
-		inventoryName = Utils.chat("&8Offers");
+		inventoryName = Utils.chat("&8Offers (Page " + currPage + ")");
 		
 		inv = Bukkit.createInventory(null, invBoxes);
 	}
@@ -63,15 +63,14 @@ public class ShopItemsUI {
 			/*
 			 * Change page of UI
 			 */
-			String targetPage = clicked.getItemMeta().getDisplayName().substring(7);
-			int targetFloor = Integer.parseInt(targetPage);
+			int target = Integer.parseInt(clicked.getItemMeta().getDisplayName().substring(7));
 			
-			if (targetFloor < currPage)
+			if (target < currPage)
 				currPage--;
-			else if (targetFloor > currPage)
+			else if (target > currPage)
 				currPage++;
 			
-			inventoryName = Utils.chat("&8My Shop (Page " + currPage + ")");
+			inventoryName = Utils.chat("&8Offers (Page " + currPage + ")");
 			player.openInventory(ShopItemsUI.GUI(player));
 		}
 	}

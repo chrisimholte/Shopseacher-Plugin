@@ -44,7 +44,7 @@ public class PlotCommands implements CommandExecutor, TabExecutor {
 				plotConfig.getConfig().set("plots.floor" + args[1] + ".plot" + args[2], args[3]);
 				plotConfig.saveConfig();
 				plotConfig.reloadConfig();
-				msg = "Successfully set " + args[3] + " as owner of plot " + args[2] + " on floor " + args[1];
+				msg = "%ASuccessfully set " + args[3] + " as owner of plot " + args[2] + " on floor " + args[1];
 			} else {
 				msg = "&CInvalid command arguments.";
 			}
@@ -59,7 +59,7 @@ public class PlotCommands implements CommandExecutor, TabExecutor {
 						plotConfig.getConfig().set("plots.floor" + args[1] + ".plot" + args[2], "");
 						plotConfig.saveConfig();
 						plotConfig.reloadConfig();
-						msg = "Successfully cleared plot " + args[2] + " on floor " + args[1];
+						msg = "%ASuccessfully cleared plot " + args[2] + " on floor " + args[1];
 					}
 				}
 			} else {
@@ -67,25 +67,29 @@ public class PlotCommands implements CommandExecutor, TabExecutor {
 			}
 		} else if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("clear")) {
-				if (args[1].equalsIgnoreCase("all")) {		// Command: /plot clear all
-					for (int i = 1; i < plotConfig.getConfig().getInt("numFloors"); i++) {
-						for (int j = 1; j < plotConfig.getConfig().getInt("numPlots"); j++) {
-							plotConfig.getConfig().set("plots.floor" + i + ".plot" + j, "");
-							plotConfig.saveConfig();
-							plotConfig.reloadConfig();
+				if (args[1].equalsIgnoreCase("all")) {		// Command: /plot clear all (admins only)
+					if (player.hasPermission("shopsearcher.admin") || player.isOp()) {
+						for (int i = 1; i <= plotConfig.getConfig().getInt("numFloors"); i++) {
+							for (int j = 1; j <= plotConfig.getConfig().getInt("numPlots"); j++) {
+								plotConfig.getConfig().set("plots.floor" + i + ".plot" + j, "");
+								plotConfig.saveConfig();
+								plotConfig.reloadConfig();
+							}
 						}
-					}
-					msg = "Successfully cleared all plots";
+						msg = "%ASuccessfully cleared all plots";
+					} else
+						msg = "&COnly admins can perform this command.";
+					
 				} else {							// Command: /plot clear <floor>
 					if (Integer.parseInt(args[1]) < 1 || Integer.parseInt(args[1]) > plotConfig.getConfig().getInt("numFloors"))
 						msg = "&CInvalid command arguments.";
 					else {
-						for (int i = 1; i < plotConfig.getConfig().getInt("numPlots"); i++) {
+						for (int i = 1; i <= plotConfig.getConfig().getInt("numPlots"); i++) {
 							plotConfig.getConfig().set("plots.floor" + args[1] + ".plot" + i, "");
 							plotConfig.saveConfig();
 							plotConfig.reloadConfig();
 						}
-						msg = "Successfully cleared all plots on floor " + args[1];
+						msg = "%ASuccessfully cleared all plots on floor " + args[1];
 					}
 				}
 			} else {

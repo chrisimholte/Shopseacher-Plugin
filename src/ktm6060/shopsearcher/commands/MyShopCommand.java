@@ -32,9 +32,9 @@ public class MyShopCommand implements CommandExecutor {
 			return true;
 		}
 		
-		for (int i = 1; i < plotConfig.getConfig().getInt("numFloors"); i++) {
-			for (int j = 1; j < plotConfig.getConfig().getInt("numPlots"); j++) {
-				if (plotConfig.getConfig().getString("plots.floor" + i + ".plot" + j).equalsIgnoreCase(player.getDisplayName())) {
+		for (int i = 1; i <= plotConfig.getConfig().getInt("numFloors"); i++) {
+			for (int j = 1; j <= plotConfig.getConfig().getInt("numPlots"); j++) {
+				if (plotConfig.getConfig().getString("plots.floor" + i + ".plot" + j).equalsIgnoreCase(player.getDisplayName()) || plotConfig.getConfig().getString("plots.floor" + i + ".plot" + j).equals(player.getName())) {
 					MyShopUI.setCurrPage(1);
 					player.openInventory(MyShopUI.GUI(player));
 					return true;

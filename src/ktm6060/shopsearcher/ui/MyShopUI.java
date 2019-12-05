@@ -22,12 +22,15 @@ public class MyShopUI {
 	private static ArrayList<ShopKeeperData> shopkeepers = new ArrayList<ShopKeeperData>();
 	
 	public static void initialize() {
-		inventoryName = Utils.chat("&8My Shop (Page " + currPage + ")");
+		inventoryName = Utils.chat("&8My Shop (Page " + currPage + " of " + numPages + ")");
 		
 		inv = Bukkit.createInventory(null, invBoxes);
 	}
 	
 	public static Inventory GUI(Player player) {
+		shopkeepers = Tools.getShopKeeperDataByOwner(player.getName());
+		numPages = Tools.getNumPages(shopkeepers);
+		inventoryName = Utils.chat("&8My Shop (Page " + currPage + " of " + numPages + ")");
 		
 		Inventory toReturnInventory = Bukkit.createInventory(null, invBoxes, inventoryName);
 		inv.clear();
@@ -35,8 +38,6 @@ public class MyShopUI {
 		/*
 		 * Add items for sale from owners shop
 		 */
-		shopkeepers = Tools.getShopKeeperDataByOwner(player.getDisplayName());
-		numPages = Tools.getNumPages(shopkeepers);
 		Tools.displayShopKeeperItems(inv, shopkeepers, currPage);
 		shopkeepers.clear();
 		
@@ -59,15 +60,13 @@ public class MyShopUI {
 			/*
 			 * Change page of UI
 			 */
-			String targetPage = clicked.getItemMeta().getDisplayName().substring(7);
-			int targetFloor = Integer.parseInt(targetPage);
+			int target = Integer.parseInt(clicked.getItemMeta().getDisplayName().substring(7));
 			
-			if (targetFloor < currPage)
+			if (target < currPage)
 				currPage--;
-			else if (targetFloor > currPage)
+			else if (target > currPage)
 				currPage++;
 			
-			inventoryName = Utils.chat("&8My Shop (Page " + currPage + ")");
 			player.openInventory(MyShopUI.GUI(player));
 		}
 	}

@@ -26,7 +26,7 @@ public class PlotUI {
 	private static ArrayList<ShopKeeperData> shopkeepers = new ArrayList<ShopKeeperData>();
 	
 	public static void initialize() {
-		inventoryName = Utils.chat("&8Plot " + plot + " (Page " + currPage + ")");
+		inventoryName = Utils.chat("&8Plot " + plot + " (Page " + currPage + " of " + numPages + ")");
 		
 		inv = Bukkit.createInventory(null, invBoxes);
 	}
@@ -39,16 +39,19 @@ public class PlotUI {
 	}
 	
 	public static Inventory GUI(Player player) {
-
-		inventoryName = Utils.chat("&8Floor " + floor + " | Plot " + plot + " (Page " + currPage + ")");
+		shopkeepers = Tools.getShopKeeperDataByOwner(owner);
+		numPages = Tools.getNumPages(shopkeepers);
+		if (numPages == 0)
+			inventoryName = Utils.chat("&8Floor " + floor + " | Plot " + plot + " (No items for sale)");
+		else
+			inventoryName = Utils.chat("&8Floor " + floor + " | Plot " + plot + " (Page " + currPage + " of " + numPages + ")");
+		
 		Inventory toReturnInventory = Bukkit.createInventory(null, invBoxes, inventoryName);
 		inv.clear();
 		
 		/*
 		 * Add items for sale from owners shop
 		 */
-		shopkeepers = Tools.getShopKeeperDataByOwner(owner);
-		numPages = Tools.getNumPages(shopkeepers);
 		Tools.displayShopKeeperItems(inv, shopkeepers, currPage);
 		shopkeepers.clear();
 		
@@ -69,12 +72,11 @@ public class PlotUI {
 		}
 		else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("Page ")))
 		{
-			String targetPage = clicked.getItemMeta().getDisplayName().substring(7);
-			int targetFloor = Integer.parseInt(targetPage);
+			int target = Integer.parseInt(clicked.getItemMeta().getDisplayName().substring(7));
 			
-			if (targetFloor < currPage)
+			if (target < currPage)
 				currPage--;
-			else if (targetFloor > currPage)
+			else if (target > currPage)
 				currPage++;
 			
 			player.openInventory(PlotUI.GUI(player));

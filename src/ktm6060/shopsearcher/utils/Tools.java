@@ -3,6 +3,7 @@ package ktm6060.shopsearcher.utils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -10,8 +11,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 import ktm6060.shopsearcher.Main;
 import ktm6060.shopsearcher.managers.ConfigManager;
@@ -97,12 +100,22 @@ public class Tools {
 		boolean breakFlag;
 		for (int i = 0; i < limit; i++) {
 			breakFlag = true;
-			
 			try {
 				skSaveConfig.get(i + ".owner").equals(null);
-				skSaveConfig.getItemStack(i + ".offers.0.item").getItemMeta();
 			} catch (NullPointerException e) {
+				//Bukkit.getConsoleSender().sendMessage("Could not find owner");
 				breakFlag = false;
+			}
+			try {
+				skSaveConfig.getItemStack(i + ".offers.0.item").getItemMeta();
+			} catch (NullPointerException e1) {
+				//Bukkit.getConsoleSender().sendMessage("Could not find itemMeta for item");
+				try {
+					skSaveConfig.getItemStack(i + ".offers.0.item1").getItemMeta();
+				} catch (NullPointerException e2) {
+					//Bukkit.getConsoleSender().sendMessage("Could not find itemMeta for item1");
+					breakFlag = false;
+				}
 			}
 			
 			if (breakFlag)
@@ -112,30 +125,72 @@ public class Tools {
 				//add all shopItems to items list
 				do {
 					shopItem = new ShopItem(skSaveConfig, i, cnt);
-					addToMap(shopItem);
+					//Bukkit.getConsoleSender().sendMessage("Found: " + shopItem.toString());
 					
 					if (items.size() == 0)
 						items.add(shopItem);
 					else {
 						for (int j = 0; j < items.size(); j++) {
+							
 							if (shopItem.toString().equals("ENCHANTED_BOOK")) {
-								items.add(shopItem);
-								break;
-							}
-							else if (items.get(j).getItemStringSort().equals(shopItem.getItemStringSort()))
+								breakFlag = true;
+								EnchantmentStorageMeta meta = (EnchantmentStorageMeta) shopItem.getItemMeta();
+								Map<Enchantment, Integer> enchants = meta.getStoredEnchants();
+								EnchantmentStorageMeta lMeta = null;
+								Map<Enchantment, Integer> lEnchants;
+								ArrayList<ShopItem> list;
+								
+								//check map if book with same enchants has already been found
+								if (allShopItemsMap.containsKey(HashString(shopItem.toString()))) {
+									list = allShopItemsMap.get(HashString(shopItem.toString()));
+									
+									if (list.size() > 1) {
+										//check list of enchanted books
+										for (int index = 0; index < list.size(); index++) {
+											try {
+												lMeta = (EnchantmentStorageMeta) list.get(index).getItemMeta();
+											} catch (ClassCastException e) {
+												Bukkit.getConsoleSender().sendMessage(list.get(index).toString());
+												Bukkit.getConsoleSender().sendMessage(list.toString());
+												Bukkit.getConsoleSender().sendMessage("Enchanted Book HashCode: " + HashString(shopItem.toString()));
+												Bukkit.getConsoleSender().sendMessage("Sticky Piston HashCode: " + HashString(list.get(index).toString()));
+												throw e;
+											}
+											
+											lEnchants = lMeta.getStoredEnchants();
+											
+											if (enchants.equals(lEnchants)) {
+												breakFlag = false;
+												break;
+											}
+										}
+									}
+								}
+								
+								
+								if (breakFlag) {
+									items.add(shopItem);
+									//Bukkit.getConsoleSender().sendMessage("Added: " + shopItem.toString());
+									break;
+								}
+								
+							} else if (items.get(j).getItemStringSort().equals(shopItem.getItemStringSort()))
 								break;
 							else if (j == items.size()-1) {
 								items.add(shopItem);
+								//Bukkit.getConsoleSender().sendMessage("Added: " + shopItem.toString());
 								break;
 							}
 						}
 					}
 					
+					addToMap(shopItem);
 					str = "" + skSaveConfig.getString(i + ".offers." + ++cnt + ".item");
 					str2 = "" + skSaveConfig.getString(i + ".offers." + cnt + ".item1");
 				} while (!str.equals("null") || !str2.equals("null"));
 			}
 			else if (++breakCnt >= breakCntLimit && i >= breakCntExecption) break;
+			//else Bukkit.getConsoleSender().sendMessage("Invalid Shopkeeper");
 		}
 		//Bukkit.getConsoleSender().sendMessage("Map: " + getAllShopItemsMap().toString());
 		items.sort(ShopItem::compareTo);
@@ -149,7 +204,15 @@ public class Tools {
 	private static int getStock(ShopItem shopItem) {
 		Location chestLocation = new Location(shopItem.getChestW(), shopItem.getChestX(), shopItem.getChestY(), shopItem.getChestZ());
 		Block chestBlock = chestLocation.getBlock();
-		Chest chest = (Chest) chestBlock.getState();
+		Chest chest = null;
+		try {
+			chest = (Chest) chestBlock.getState();
+		} catch (ClassCastException e) {
+			//Bukkit.getConsoleSender().sendMessage(e.toString());
+			Bukkit.getConsoleSender().sendMessage("[Shopsearcher]: Could not find chest at W:" + shopItem.getChestW().getName() + " X:" + shopItem.getChestX() + " Y:" + shopItem.getChestY() + " Z:" + shopItem.getChestZ());
+			//Bukkit.broadcastMessage("Could not find chest at W:" + shopItem.getChestW().getName() + " X:" + shopItem.getChestX() + " Y:" + shopItem.getChestY() + " Z:" + shopItem.getChestZ());
+			return 0;
+		}
 		Inventory chestInv = chest.getInventory();
 		ItemStack[] chestItems = chestInv.getContents();		
 		
@@ -223,8 +286,8 @@ public class Tools {
 			
 			//get floor and plot of owner
 			floor = plot = 0;
-			for (int f = 0; f < plotConfig.getConfig().getInt("numFloors"); f++) {
-				for (int p = 0; p < plotConfig.getConfig().getInt("numPlots"); p++) {
+			for (int f = 1; f <= plotConfig.getConfig().getInt("numFloors"); f++) {
+				for (int p = 1; p <= plotConfig.getConfig().getInt("numPlots"); p++) {
 					if ((plotConfig.getConfig().getString("plots.floor" + f + ".plot" + p) + "").equals(shopItem.getowner())) {
 						floor = f;
 						plot = p;
@@ -306,7 +369,7 @@ public class Tools {
 	private static Integer HashString(String str, int num) {
 		if (num < 0) return 0;
 		else
-			return str.charAt(num) + HashString(str.substring(0, num), --num);
+			return str.charAt(num)*num + HashString(str.substring(0, num), --num);
 	}
 	
 	private static String assignRarityColor(String str) {

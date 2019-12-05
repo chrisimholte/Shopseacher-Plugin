@@ -50,8 +50,8 @@ public class ShopCommand implements CommandExecutor, TabExecutor {
 		else if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("close")) {
 				//check if player doesn't own a shop
-				for (int i = 1; i < plotConfig.getConfig().getInt("numFloors"); i++) {
-					for (int j = 1; j < plotConfig.getConfig().getInt("numPlots"); j++) {
+				for (int i = 1; i <= plotConfig.getConfig().getInt("numFloors"); i++) {
+					for (int j = 1; j <= plotConfig.getConfig().getInt("numPlots"); j++) {
 						if (plotConfig.getConfig().getString("plots.floor" + i + ".plot" + j).equalsIgnoreCase(player.getDisplayName())) {
 							player.sendMessage(Utils.chat("&6Are you sure you want to close your shop? Type /confirm to confirm"));
 							ConfirmCommand.queueCmd(player.getDisplayName(), "close");
@@ -70,14 +70,14 @@ public class ShopCommand implements CommandExecutor, TabExecutor {
 		} else if (args.length == 3) {
 			if (args[0].equalsIgnoreCase("buy")) {
 				if (Integer.parseInt(args[1]) < 1 || Integer.parseInt(args[1]) > plotConfig.getConfig().getInt("numFloors"))
-					msg = "&CInvalid command arguments.";
+					msg = "&CInvalid command arguments. Use /shop buy <floor> <plot>";
 				else {
 					if (Integer.parseInt(args[2]) < 1 || Integer.parseInt(args[2]) > plotConfig.getConfig().getInt("numPlots"))
-						msg = "&CInvalid command arguments.";
+						msg = "&CInvalid command arguments. Use /shop buy <floor> <plot>";
 					else {
 						//check if player already owns a shop
-						for (int i = 1; i < plotConfig.getConfig().getInt("numFloors"); i++) {
-							for (int j = 1; j < plotConfig.getConfig().getInt("numPlots"); j++) {
+						for (int i = 1; i <= plotConfig.getConfig().getInt("numFloors"); i++) {
+							for (int j = 1; j <= plotConfig.getConfig().getInt("numPlots"); j++) {
 								if (plotConfig.getConfig().getString("plots.floor" + i + ".plot" + j).equalsIgnoreCase(player.getDisplayName())) {
 									player.sendMessage(Utils.chat("&CYou already own a shop!"));
 									ConfirmCommand.reset();

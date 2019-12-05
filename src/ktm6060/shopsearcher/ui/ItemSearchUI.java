@@ -23,12 +23,15 @@ public class ItemSearchUI {
 	private static ArrayList<ShopItem> shopItems = new ArrayList<ShopItem>();
 
 	public static void initialize() {
-		inventoryName = Utils.chat("&8Item Search (Page " + currPage + ")");
+		inventoryName = Utils.chat("&8Item Search (Page " + currPage + " of " + numPages + ")");
 		
 		inv = Bukkit.createInventory(null, invBoxes);
 	}
 	
 	public static Inventory GUI(Player player) {
+		numPages = shopItems.size() / 45;
+		numPages += shopItems.size() % 45 > 0 ? 1 : 0;
+		inventoryName = Utils.chat("&8Item Search (Page " + currPage + " of " + numPages + ")");
 		
 		Inventory toReturnInventory = Bukkit.createInventory(null, invBoxes, inventoryName);
 		inv.clear();
@@ -36,10 +39,7 @@ public class ItemSearchUI {
 		/*
 		 * Add items for sale from owners shop
 		 */
-		numPages = shopItems.size() / 45;
-		numPages += shopItems.size() % 45 > 0 ? 1 : 0;
 		Tools.displayShopItemsOnly(inv, shopItems, currPage, 45);
-		
 		Tools.setPageSwitchingIcons(inv, numPages, currPage);
 		
 		//go back icon
@@ -61,15 +61,13 @@ public class ItemSearchUI {
 			/*
 			 * Change page of UI
 			 */
-			String targetPage = clicked.getItemMeta().getDisplayName().substring(7);
-			int targetFloor = Integer.parseInt(targetPage);
+			int target = Integer.parseInt(clicked.getItemMeta().getDisplayName().substring(7));
 			
-			if (targetFloor < currPage)
+			if (target < currPage)
 				currPage--;
-			else if (targetFloor > currPage)
+			else if (target > currPage)
 				currPage++;
 			
-			Bukkit.getConsoleSender().sendMessage("Change to page " + currPage);
 			player.openInventory(ItemSearchUI.GUI(player));
 		}
 		else
@@ -88,8 +86,25 @@ public class ItemSearchUI {
 					list.remove(i--);
 				}
 			}
+			/*
+			String str = "";
+			for (int i = 0; i < list.size(); i++)
+				str += list.get(i).getAmount() + ":" + list.get(i).getPrice() + ", ";
+			Bukkit.getConsoleSender().sendMessage(str);
+			*/
 			list.sort(ShopItem::compareToDeal);
-			player.openInventory(ShopItemsUI.GUI(player, list));
+			ArrayList<ShopItem> temp = new ArrayList<ShopItem>();
+			
+			for (int i = 0; i < list.size(); i++) 
+				temp.add(list.get(i));
+			/*
+			str = "";
+			for (int i = 0; i < temp.size(); i++)
+				str += temp.get(i).getAmount() + ":" + temp.get(i).getPrice() + ", ";
+			Bukkit.getConsoleSender().sendMessage(str);
+			*/
+			ShopItemsUI.setCurrPage(1);
+			player.openInventory(ShopItemsUI.GUI(player, temp));
 		}
 	}
 	

@@ -1,10 +1,14 @@
 package ktm6060.shopsearcher.types;
 
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -80,7 +84,7 @@ public class ShopItem {
 	}
 
 	public void updateData() {
-		Bukkit.getConsoleSender().sendMessage("[ShopSearcher]: Reading data for Shopkeeper: " + shopkeeperID + "  ShopItem: " + shopItemID);
+		//Bukkit.getConsoleSender().sendMessage("[ShopSearcher]: Reading data for Shopkeeper: " + shopkeeperID + "  ShopItem: " + shopItemID);
 		this.itemStack = skSaveConfig.getItemStack(shopkeeperID + ".offers." + shopItemID + ".item");
 		if (itemStack == null)
 			this.itemStack = skSaveConfig.getItemStack(shopkeeperID + ".offers." + shopItemID + ".resultItem");
@@ -104,12 +108,25 @@ public class ShopItem {
 	}
 	
 	public int compareTo(ShopItem shopItem) {
+		if (this.getItemStringSort().equals("ENCHANTED_BOOK") && shopItem.getItemStringSort().equals("ENCHANTED_BOOK")) {
+			EnchantmentStorageMeta meta1 = (EnchantmentStorageMeta) itemMeta;
+			Map<Enchantment, Integer> enchants1 = meta1.getStoredEnchants();
+			EnchantmentStorageMeta meta2 = (EnchantmentStorageMeta) shopItem.getItemMeta();
+			Map<Enchantment, Integer> enchants2 = meta2.getStoredEnchants();
+			
+			return (item.toString() + enchants1.toString()).compareToIgnoreCase(shopItem.toString() + enchants2.toString());
+		}
 		return item.toString().compareToIgnoreCase(shopItem.toString());
 	}
 	
 	public int compareToDeal(ShopItem shopItem) {
 		//return price per item
-		return (price/amount) - (shopItem.getPrice()/shopItem.getAmount());
+		//return (price/amount) - (shopItem.getPrice()/shopItem.getAmount());
+		
+		//int num = (int) (((((double) shopItem.getAmount())/shopItem.getPrice()) - (((double) amount)/price)) * 10000);
+		//Bukkit.getConsoleSender().sendMessage("compareToDeal Ratio, " + this.toString() + "-" + shopItem.toString() + ": " + num);
+		//return (int) num;
+		return (int) (((((double) shopItem.getAmount())/shopItem.getPrice()) - (((double) amount)/price)) * 10000);
 	}
 	
 	public String toString() {

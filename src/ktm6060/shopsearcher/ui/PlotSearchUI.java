@@ -20,13 +20,15 @@ public class PlotSearchUI {
 	private static int numPages = 3;
 	
 	public static void initialize() {
-		inventoryName = Utils.chat("&8Plots (Floor " + currPage + ")");
+		inventoryName = Utils.chat("&8Plots (Floor " + currPage + " of " + numPages + ")");
 		
 		inv = Bukkit.createInventory(null, invBoxes);
 	}
 	
 	public static Inventory GUI(Player player) {
-		inventoryName = Utils.chat("&8Plots (Floor " + currPage + ")");
+		numPages = Main.getPlotOwnersConfig().getConfig().getInt("numFloors");
+		inventoryName = Utils.chat("&8Plots (Floor " + currPage + " of " + numPages + ")");
+		
 		Inventory toReturnInventory = Bukkit.createInventory(null, invBoxes, inventoryName);
 		inv.clear();
 		ConfigManager plotConfig = Main.getPlotOwnersConfig();
@@ -56,12 +58,11 @@ public class PlotSearchUI {
 		}
 		else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("Floor ")))
 		{
-			String targetPage = clicked.getItemMeta().getDisplayName().substring(8);
-			int targetFloor = Integer.parseInt(targetPage);
+			int target = Integer.parseInt(clicked.getItemMeta().getDisplayName().substring(8));
 			
-			if (targetFloor < currPage)
+			if (target < currPage)
 				currPage--;
-			else if (targetFloor > currPage)
+			else if (target > currPage)
 				currPage++;
 			
 			player.openInventory(PlotSearchUI.GUI(player));
@@ -79,7 +80,7 @@ public class PlotSearchUI {
 					return;
 				}
 			}
-			player.sendMessage(Utils.chat("&CThis plot does not sell any items."));
+			player.sendMessage(Utils.chat("&CThis plot is vacant."));
 		}
 		else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("Page ")))
 		{

@@ -56,14 +56,13 @@ public class Main extends JavaPlugin {
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
 		
-		configManager = new ConfigManager();
-		configManager.setupPlots();
 		createPlotOwnersConfig();
-		configManager.getConfig().options().copyDefaults(true);
-		configManager.saveConfig();
 	}
 	
 	public void createPlotOwnersConfig() {
+		configManager = new ConfigManager();
+		configManager.setupPlots();
+		
 		int floors = getConfig().getInt("plots.numFloors");
 		int plots = getConfig().getInt("plots.numPlots");
 		
@@ -77,6 +76,8 @@ public class Main extends JavaPlugin {
 				configManager.getConfig().addDefault("plots.floor" + i + ".plot" + j, "");
 			}
 		}
+		configManager.getConfig().options().copyDefaults(true);
+		configManager.saveConfig();
 	}
 	
 	public static ConfigManager getPlotOwnersConfig() {

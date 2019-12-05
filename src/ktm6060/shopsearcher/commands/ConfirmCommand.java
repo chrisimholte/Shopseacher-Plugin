@@ -94,8 +94,8 @@ public class ConfirmCommand implements CommandExecutor {
 			player.sendMessage(Utils.chat("&AShop successfully bought. You are plot " + plot + " on floor " + floor + "."));
 			
 		} else if (cmdString.equals("close")) {
-			for (int i = 1; i < plotConfig.getConfig().getInt("numFloors"); i++) {
-				for (int j = 1; j < plotConfig.getConfig().getInt("numPlots"); j++) {
+			for (int i = 1; i <= plotConfig.getConfig().getInt("numFloors"); i++) {
+				for (int j = 1; j <= plotConfig.getConfig().getInt("numPlots"); j++) {
 					if (plotConfig.getConfig().getString("plots.floor" + i + ".plot" + j).equalsIgnoreCase(playerName)) {
 						plotConfig.getConfig().set("plots.floor" + i + ".plot" + j, "");
 						plotConfig.saveConfig();

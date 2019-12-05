@@ -48,7 +48,8 @@ public class FloorCommand implements CommandExecutor, TabExecutor {
 				player.sendMessage(Utils.chat(msg));
 			else
 				Bukkit.getConsoleSender().sendMessage(Utils.chat(msg));
-		}
+		} else
+			Bukkit.getConsoleSender().sendMessage(Utils.chat("&C Invalid command arguments. Use /floor <floor>"));
 		
 		return false;
 	}
