@@ -20,7 +20,13 @@ public class ItemSearchUI {
 	private static int invBoxes = invRows * 9;
 	private static int currPage = 1;
 	private static int numPages = 0;
+	private int icurrPage = 1;
+	private int inumPages = 0;
 	private static ArrayList<ShopItem> shopItems = new ArrayList<ShopItem>();
+	
+	public ItemSearchUI() {
+		
+	}
 
 	public static void initialize() {
 		inventoryName = Utils.chat("&8Item Search (Page " + currPage + " of " + numPages + ")");
@@ -28,7 +34,7 @@ public class ItemSearchUI {
 		inv = Bukkit.createInventory(null, invBoxes);
 	}
 	
-	public static Inventory GUI(Player player) {
+	public static Inventory staticGUI(Player player) {
 		numPages = shopItems.size() / 45;
 		numPages += shopItems.size() % 45 > 0 ? 1 : 0;
 		inventoryName = Utils.chat("&8Item Search (Page " + currPage + " of " + numPages + ")");
@@ -49,6 +55,28 @@ public class ItemSearchUI {
 		return toReturnInventory;
 	}
 	
+	public Inventory GUI(Player player, int cp) {
+		icurrPage = cp;
+		inumPages = shopItems.size() / 45;
+		inumPages += shopItems.size() % 45 > 0 ? 1 : 0;
+		inventoryName = Utils.chat("&8Item Search (Page " + icurrPage + " of " + inumPages + ")");
+		
+		Inventory toReturnInventory = Bukkit.createInventory(null, invBoxes, inventoryName);
+		inv.clear();
+		
+		/*
+		 * Add items for sale from owners shop
+		 */
+		Tools.displayShopItemsOnly(inv, shopItems, icurrPage, 45);
+		Tools.setPageSwitchingIcons(inv, inumPages, icurrPage);
+		
+		//go back icon
+		Utils.createItem(inv, "barrier", 1, 49, "&CGo Back");
+		
+		toReturnInventory.setContents(inv.getContents());
+		return toReturnInventory;
+	}
+	
 	@SuppressWarnings("deprecation")
 	public static void clicked(Player player, int slot, ItemStack clicked, Inventory inv) {
 		if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&CGo Back"))) {
@@ -57,18 +85,20 @@ public class ItemSearchUI {
 		}
 		else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("Page ")))
 		{
-			
 			/*
 			 * Change page of UI
 			 */
 			int target = Integer.parseInt(clicked.getItemMeta().getDisplayName().substring(7));
+			Bukkit.getConsoleSender().sendMessage("Change page to: " + target);
 			
 			if (target < currPage)
 				currPage--;
 			else if (target > currPage)
 				currPage++;
 			
-			player.openInventory(ItemSearchUI.GUI(player));
+			player.closeInventory();
+			ItemSearchUI inventory = new ItemSearchUI();
+			player.openInventory(inventory.GUI(player, target));
 		}
 		else
 		{

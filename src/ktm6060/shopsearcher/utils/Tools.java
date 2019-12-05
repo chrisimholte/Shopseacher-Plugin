@@ -34,7 +34,6 @@ public class Tools {
 				skConfig = YamlConfiguration.loadConfiguration(file);
 		}
 		return skConfig;
-		
 	}
 
 	public static FileConfiguration getSKSaveConfig() {

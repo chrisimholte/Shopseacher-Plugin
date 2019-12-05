@@ -56,7 +56,9 @@ public class ShopItemsUI {
 	public static void clicked(Player player, int slot, ItemStack clicked, Inventory inv) {
 		if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&CGo Back"))) {
 			//player.sendMessage(Utils.chat("&8[&6*&8] &6&lBack to ShopSearchMenuUI."));
-			player.openInventory(ItemSearchUI.GUI(player));
+			ItemSearchUI inventory = new ItemSearchUI();
+			// TODO go back to correct page
+			player.openInventory(inventory.GUI(player, 1));
 		}
 		else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("Page ")))
 		{

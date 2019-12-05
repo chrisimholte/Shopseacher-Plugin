@@ -29,9 +29,7 @@ public class InventoryClickListener implements Listener {
 		{
 			e.setCancelled(true);
 			
-			if (e.getCurrentItem() == null) {
-				return;
-			}
+			if (e.getCurrentItem() == null) return;
 			if (title.equals(ShopSearchMenuUI.inventoryName)) {
 				ShopSearchMenuUI.clicked((Player) e.getWhoClicked(), e.getSlot(), e.getCurrentItem(), e.getInventory());
 			}
@@ -40,9 +38,7 @@ public class InventoryClickListener implements Listener {
 		{
 			e.setCancelled(true);
 			
-			if (e.getCurrentItem() == null) {
-				return;
-			}
+			if (e.getCurrentItem() == null) return;
 			if (title.equals(PlotSearchUI.inventoryName)) {
 				PlotSearchUI.clicked((Player) e.getWhoClicked(), e.getSlot(), e.getCurrentItem(), e.getInventory());
 			}
@@ -51,45 +47,29 @@ public class InventoryClickListener implements Listener {
 		{
 			e.setCancelled(true);
 			
-			if (e.getCurrentItem() == null) {
-				return;
-			}
-			if (title.equals(ItemSearchUI.inventoryName)) {
-				ItemSearchUI.clicked((Player) e.getWhoClicked(), e.getSlot(), e.getCurrentItem(), e.getInventory());
-			}
+			if (e.getCurrentItem() == null) return;
+			ItemSearchUI.clicked((Player) e.getWhoClicked(), e.getSlot(), e.getCurrentItem(), e.getInventory());
 		} //actions for MyShopUI
 		else if(title.equals(MyShopUI.inventoryName))
 		{
 			e.setCancelled(true);
 			
-			if (e.getCurrentItem() == null) {
-				return;
-			}
-			if (title.equals(MyShopUI.inventoryName)) {
-				MyShopUI.clicked((Player) e.getWhoClicked(), e.getSlot(), e.getCurrentItem(), e.getInventory());
-			}
+			if (e.getCurrentItem() == null) return;
+			MyShopUI.clicked((Player) e.getWhoClicked(), e.getSlot(), e.getCurrentItem(), e.getInventory());
 		} //actions for PlotUI
 		else if(title.equals(PlotUI.inventoryName))
 		{
 			e.setCancelled(true);
 			
-			if (e.getCurrentItem() == null) {
-				return;
-			}
-			if (title.equals(PlotUI.inventoryName)) {
-				PlotUI.clicked((Player) e.getWhoClicked(), e.getSlot(), e.getCurrentItem(), e.getInventory());
-			}
+			if (e.getCurrentItem() == null) return;
+			PlotUI.clicked((Player) e.getWhoClicked(), e.getSlot(), e.getCurrentItem(), e.getInventory());
 		} //actions for ShopItemsUI
 		else if(title.equals(ShopItemsUI.inventoryName))
 		{
 			e.setCancelled(true);
 			
-			if (e.getCurrentItem() == null) {
-				return;
-			}
-			if (title.equals(ShopItemsUI.inventoryName)) {
-				ShopItemsUI.clicked((Player) e.getWhoClicked(), e.getSlot(), e.getCurrentItem(), e.getInventory());
-			}
+			if (e.getCurrentItem() == null) return;
+			ShopItemsUI.clicked((Player) e.getWhoClicked(), e.getSlot(), e.getCurrentItem(), e.getInventory());
 		}
 		
 	}

@@ -47,7 +47,8 @@ public class ShopSearchMenuUI {
 			//player.sendMessage(Utils.chat("&8[&6*&8] &6&lItemSearchUI opened."));
 			ItemSearchUI.setCurrPage(1);
 			ItemSearchUI.setShopItems(Tools.getUniqueShopItems());
-			player.openInventory(ItemSearchUI.GUI(player));
+			ItemSearchUI inventory = new ItemSearchUI();
+			player.openInventory(inventory.GUI(player, 1));
 		} else if (clicked.getItemMeta().getDisplayName().contains(Utils.chat("My Shop"))) {
 			//player.sendMessage(Utils.chat("&8[&6*&8] &6&lMyShopUI opened."));
 			ConfigManager plotConfig = Main.getPlotOwnersConfig();
