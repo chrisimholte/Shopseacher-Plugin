@@ -27,6 +27,24 @@ public class InventoryClickListener implements Listener {
 		//actions for ShopSearchMenuUI
 		if(title.equals(ShopSearchMenuUI.inventoryName))
 		{
+			
+			
+			
+			/*
+			  Follow java conventions.
+			Consider adding more comments. 
+			Consider re-ordering where e.setCancelled(true) occurs in the interaction chain/else if chain.
+			Where you have it, it could potentially bing ignorant of interactions later on within the process,
+			thus creating the impact of not having an handler on an event.
+			Potentially another fix that I would try would be adding the statement block:
+			if(e.isCancelled()){
+			return;
+			}
+			I can't spend much more time on this tonight. Good Luck Hope it works.
+			/
+			
+			
+			
 			e.setCancelled(true);
 			
 			if (e.getCurrentItem() == null) return;
